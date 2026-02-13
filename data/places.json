@@ -1,0 +1,140 @@
+[
+  {
+    "slug": "sanfrancisco",
+    "name_zh": "旧金山",
+    "name_en": "San Francisco",
+    "lat": 37.7749,
+    "lon": -122.4194,
+    "visited": true,
+    "date_range": "2025.07-2025.08",
+    "tags": [
+      "Art",
+      "River",
+      "Museum",
+      "Technology",
+      "Food",
+      "Bridge",
+      "Ocean"
+    ],
+    "quote": "雨后塞纳河像被一层丝绒轻轻覆盖。",
+    "thoughts": [
+      "金门大桥的日出景色令人难忘",
+      "渔人码头的海鲜非常新鲜美味",
+      "艺术宫的建筑风格独特，值得细细品味",
+      "旧金山的街头艺术充满创意",
+      "太平洋的海景让人心旷神怡"
+    ],
+    "photos": [
+      "./assets/photos/America/SanFrancisco/01.jpg",
+      "./assets/photos/America/SanFrancisco/02.jpg"
+    ],
+    "country_zh": "美国",
+    "country_en": "USA"
+  },
+  {
+    "slug": "losangeles",
+    "name_zh": "洛杉矶",
+    "name_en": "Los Angeles",
+    "lat": 34.0522,
+    "lon": -118.2437,
+    "visited": true,
+    "date_range": "2024.03-2024.04",
+    "tags": [
+      "Entertainment",
+      "Beach",
+      "Culture",
+      "Food"
+    ],
+    "quote": "洛杉矶的阳光总是那么灿烂。",
+    "thoughts": [
+      "好莱坞星光大道充满电影魅力",
+      "圣莫尼卡海滩的日落美景令人陶醉",
+      "环球影城的游乐设施刺激有趣",
+      "洛杉矶的多元文化美食丰富多样"
+    ],
+    "photos": [
+      "./assets/photos/America/LosAngeles/01.jpg",
+      "./assets/photos/America/LosAngeles/02.jpg",
+      "./assets/photos/America/LosAngeles/03.jpg",
+      "./assets/photos/America/LosAngeles/04.jpg",
+      "./assets/photos/America/LosAngeles/05.jpg",
+      "./assets/photos/America/LosAngeles/06.jpg",
+      "./assets/photos/America/LosAngeles/07.jpg",
+      "./assets/photos/America/LosAngeles/08.jpg",
+      "./assets/photos/America/LosAngeles/09.jpg",
+      "./assets/photos/America/LosAngeles/10.jpg",
+      "./assets/photos/America/LosAngeles/11.jpg",
+      "./assets/photos/America/LosAngeles/12.jpg",
+      "./assets/photos/America/LosAngeles/13.jpg",
+      "./assets/photos/America/LosAngeles/14.jpg",
+      "./assets/photos/America/LosAngeles/15.jpg",
+      "./assets/photos/America/LosAngeles/16.jpg",
+      "./assets/photos/America/LosAngeles/17.jpg",
+      "./assets/photos/America/LosAngeles/18.jpg",
+      "./assets/photos/America/LosAngeles/19.jpg"
+    ],
+    "country_zh": "美国",
+    "country_en": "USA"
+  },
+  {
+    "slug": "paris",
+    "name_zh": "巴黎",
+    "name_en": "Paris",
+    "lat": 48.8566,
+    "lon": 2.3522,
+    "visited": false,
+    "date_range": "计划中",
+    "tags": [
+      "Art",
+      "History",
+      "Fashion",
+      "Cuisine",
+      "Architecture"
+    ],
+    "quote": "巴黎是一座永远让人想要重新认识的城市。",
+    "thoughts": [
+      "埃菲尔铁塔是必去的地标",
+      "卢浮宫的艺术珍品令人叹为观止",
+      "塞纳河畔的咖啡馆氛围很棒",
+      "蒙马特高地的艺术氛围浓厚",
+      "香榭丽舍大街的购物体验很棒"
+    ],
+    "photos": [
+      "./assets/photos/Europe/Paris/01.jpg",
+      "./assets/photos/Europe/Paris/02.jpg",
+      "./assets/photos/Europe/Paris/03.jpg",
+      "./assets/photos/Europe/Paris/04.jpg",
+      "./assets/photos/Europe/Paris/05.jpg"
+    ],
+    "country_zh": "法国",
+    "country_en": "France"
+  },
+  {
+    "slug": "newyork",
+    "name_zh": "纽约",
+    "name_en": "New York",
+    "lat": 40.7128,
+    "lon": -74.006,
+    "visited": true,
+    "date_range": "2024.05-2024.06",
+    "tags": [
+      "City",
+      "Culture",
+      "Food",
+      "Entertainment"
+    ],
+    "quote": "纽约不夜城，永远充满活力。",
+    "thoughts": [
+      "时代广场的霓虹灯令人眼花缭乱",
+      "中央公园是城市中的绿洲",
+      "百老汇的音乐剧精彩绝伦"
+    ],
+    "photos": [
+      "./assets/photos/America/NewYork/01.jpg",
+      "./assets/photos/America/NewYork/02.jpg",
+      "./assets/photos/America/NewYork/03.jpg"
+    ],
+    "country_zh": "美国",
+    "country_en": "USA"
+  }
+]
