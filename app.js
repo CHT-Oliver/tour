@@ -90,32 +90,27 @@ async function loadPlaces() {
 
 async function initHome() {
   playReveal();
-  const map = L.map("map", {
-    zoomControl: false,
-    minZoom: 1,
-    maxZoom: 7,
-    zoomSnap: 0.5,
-    zoomDelta: 0.5,
-    worldCopyJump: true,
-    inertia: true,
-    scrollWheelZoom: true,
-    touchZoom: true,
-    doubleClickZoom: true,
-    keyboard: true,
-  }).setView([20, 10], 2);
+  if (!window.maplibregl) return;
+  const map = new maplibregl.Map({
+    container: "map",
+    style: "https://demotiles.maplibre.org/style.json",
+    center: [10, 20],
+    zoom: 1.4,
+    minZoom: 0.8,
+    maxZoom: 6,
+    renderWorldCopies: true,
+    projection: "globe",
+    antialias: true,
+    attributionControl: false,
+  });
+
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
 
   const zoomBox = document.getElementById("lux-zoom");
   if (zoomBox) {
-    zoomBox.querySelector('[data-zoom="in"]')?.addEventListener("click", () => map.zoomIn());
-    zoomBox.querySelector('[data-zoom="out"]')?.addEventListener("click", () => map.zoomOut());
+    zoomBox.querySelector('[data-zoom="in"]')?.addEventListener("click", () => map.zoomIn({ duration: 500 }));
+    zoomBox.querySelector('[data-zoom="out"]')?.addEventListener("click", () => map.zoomOut({ duration: 500 }));
   }
-
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
-    attribution: "",
-    updateWhenIdle: true,
-    updateWhenZooming: false,
-    keepBuffer: 2,
-  }).addTo(map);
 
   const mapEl = map.getContainer();
   const setDragging = (state) => {
@@ -128,16 +123,11 @@ async function initHome() {
 
   const places = await loadPlaces();
   const visited = places.filter((place) => place.visited);
-  const cityLabelZoom = 5;
-  const countryLabelMaxZoom = 3;
-
-  const hoverLayer = L.layerGroup().addTo(map);
-  const pinLayer = L.layerGroup().addTo(map);
-  const cityLabelLayer = L.layerGroup().addTo(map);
-  const countryLabelLayer = L.layerGroup().addTo(map);
+  const cityLabelZoom = 4.4;
+  const countryLabelMaxZoom = 3.2;
 
   const countries = new Map();
-  places.forEach((place) => {
+  visited.forEach((place) => {
     const countryZh = place.country_zh;
     const countryEn = place.country_en;
     if (!countryZh && !countryEn) return;
@@ -149,104 +139,124 @@ async function initHome() {
     countries.set(key, item);
   });
 
+  const tooltip = document.createElement("div");
+  tooltip.className = "lux-tooltip map-tooltip";
+  tooltip.style.opacity = "0";
+  mapEl.appendChild(tooltip);
+
+  let activeTooltip = null;
+  const showTooltip = (place) => {
+    tooltip.innerHTML = `
+      <span class="tooltip-title">${place.name_zh}</span>
+      <span class="tooltip-sub">${place.name_en}</span>
+    `;
+    tooltip.style.opacity = "1";
+    activeTooltip = place;
+    positionTooltip();
+  };
+  const hideTooltip = () => {
+    tooltip.style.opacity = "0";
+    activeTooltip = null;
+  };
+  const positionTooltip = () => {
+    if (!activeTooltip) return;
+    const point = map.project([activeTooltip.lon, activeTooltip.lat]);
+    tooltip.style.transform = `translate(${point.x}px, ${point.y - 16}px) translate(-50%, -100%)`;
+  };
+
+  map.on("move", positionTooltip);
+  map.on("zoom", positionTooltip);
+
+  const cityMarkers = [];
+  const countryMarkers = [];
+
   countries.forEach((item) => {
     const lat = item.lat / item.count;
     const lon = item.lon / item.count;
     const label = `${item.countryZh || ""} ${item.countryEn || ""}`.trim();
     if (!label) return;
-    const marker = L.marker([lat, lon], {
-      icon: L.divIcon({
-        className: "country-label leaflet-label",
-        html: label,
-        iconSize: [0, 0],
-      }),
-      interactive: false,
-    });
-    countryLabelLayer.addLayer(marker);
+    const el = document.createElement("div");
+    el.className = "country-label maplibre-label";
+    el.textContent = label;
+    const marker = new maplibregl.Marker({ element: el, anchor: "center" })
+      .setLngLat([lon, lat])
+      .addTo(map);
+    countryMarkers.push(marker);
   });
 
   visited.forEach((place) => {
-    const marker = L.marker([place.lat, place.lon], {
-      icon: L.divIcon({
-        className: "",
-        html: "<span class=\"map-pin\"></span>",
-        iconSize: [14, 14],
-        iconAnchor: [7, 7],
-      }),
-      interactive: false,
-    });
-    pinLayer.addLayer(marker);
-
     const labelText = `${place.name_zh} ${place.name_en}`.trim();
-    const hitWidth = Math.min(260, Math.max(140, labelText.length * 12));
-    const hitHeight = 70;
-    const hoverMarker = L.marker([place.lat, place.lon], {
-      icon: L.divIcon({
-        className: "hover-hitbox",
-        html: "",
-        iconSize: [hitWidth, hitHeight],
-        iconAnchor: [hitWidth / 2, hitHeight / 2],
-      }),
-      interactive: true,
-    });
-    hoverLayer.addLayer(hoverMarker);
+    const hitWidth = Math.min(260, Math.max(160, labelText.length * 12));
+    const hitHeight = 80;
 
-    const tooltipHtml = `
-      <span class="tooltip-title">${place.name_zh}</span>
-      <span class="tooltip-sub">${place.name_en}</span>
-    `;
-
-    hoverMarker.bindTooltip(tooltipHtml, {
-      className: "lux-tooltip",
-      direction: "top",
-      offset: [0, -12],
-      opacity: 1,
-    });
-
-    hoverMarker.on("click", (event) => {
-      const mapRect = map.getContainer().getBoundingClientRect();
-      const point = map.latLngToContainerPoint(event.latlng);
-      const x = mapRect.left + point.x;
-      const y = mapRect.top + point.y;
-      const pinEl = marker.getElement()?.querySelector('.map-pin');
+    const markerEl = document.createElement("div");
+    markerEl.className = "map-marker";
+    markerEl.style.width = `${hitWidth}px`;
+    markerEl.style.height = `${hitHeight}px`;
+    markerEl.innerHTML = "<span class=\"map-pin\"></span>";
+    markerEl.addEventListener("mouseenter", () => showTooltip(place));
+    markerEl.addEventListener("mouseleave", hideTooltip);
+    markerEl.addEventListener("mousemove", positionTooltip);
+    markerEl.addEventListener("click", () => {
+      const rect = mapEl.getBoundingClientRect();
+      const point = map.project([place.lon, place.lat]);
+      const x = rect.left + point.x;
+      const y = rect.top + point.y;
+      const pinEl = markerEl.querySelector(".map-pin");
       if (pinEl && window.gsap) {
         gsap.to(pinEl, {
           scale: 1.6,
-          boxShadow: '0 0 22px rgba(220, 190, 130, 0.95)',
+          boxShadow: "0 0 22px rgba(220, 190, 130, 0.95)",
           duration: 0.35,
-          ease: 'power2.out',
+          ease: "power2.out",
           onComplete: () => {
-            gsap.to(pinEl, { scale: 1, duration: 0.3, ease: 'power2.inOut' });
+            gsap.to(pinEl, { scale: 1, duration: 0.3, ease: "power2.inOut" });
           },
         });
       }
       transitionTo(`./place.html?slug=${place.slug}`, { x, y });
     });
 
-    const cityLabel = L.marker([place.lat, place.lon], {
-      icon: L.divIcon({
-        className: "city-label leaflet-label",
-        html: `${place.name_zh} ${place.name_en}`,
-        iconSize: [0, 0],
-      }),
-      interactive: false,
+    new maplibregl.Marker({ element: markerEl, anchor: "center" })
+      .setLngLat([place.lon, place.lat])
+      .addTo(map);
+
+    const labelEl = document.createElement("div");
+    labelEl.className = "city-label maplibre-label";
+    labelEl.textContent = labelText;
+    const labelMarker = new maplibregl.Marker({ element: labelEl, anchor: "center" })
+      .setLngLat([place.lon, place.lat])
+      .addTo(map);
+    cityMarkers.push(labelMarker);
+  });
+
+  map.on("load", () => {
+    if (map.setProjection) {
+      map.setProjection({ type: "globe" });
+    }
+    map.setFog({
+      color: "rgb(236, 230, 220)",
+      "high-color": "rgb(210, 190, 150)",
+      "space-color": "rgb(18, 22, 20)",
+      "horizon-blend": 0.15,
+      "star-intensity": 0.2,
     });
-    cityLabelLayer.addLayer(cityLabel);
+
+    map.getStyle().layers
+      .filter((layer) => layer.type === "symbol")
+      .forEach((layer) => map.setLayoutProperty(layer.id, "visibility", "none"));
   });
 
   const updateLabelVisibility = () => {
     const zoom = map.getZoom();
-    if (zoom <= countryLabelMaxZoom) {
-      if (!map.hasLayer(countryLabelLayer)) map.addLayer(countryLabelLayer);
-    } else {
-      if (map.hasLayer(countryLabelLayer)) map.removeLayer(countryLabelLayer);
-    }
-
-    if (zoom >= cityLabelZoom) {
-      if (!map.hasLayer(cityLabelLayer)) map.addLayer(cityLabelLayer);
-    } else {
-      if (map.hasLayer(cityLabelLayer)) map.removeLayer(cityLabelLayer);
-    }
+    const showCountry = zoom <= countryLabelMaxZoom;
+    const showCity = zoom >= cityLabelZoom;
+    countryMarkers.forEach((marker) => {
+      marker.getElement().style.opacity = showCountry ? "1" : "0";
+    });
+    cityMarkers.forEach((marker) => {
+      marker.getElement().style.opacity = showCity ? "1" : "0";
+    });
   };
 
   updateLabelVisibility();
