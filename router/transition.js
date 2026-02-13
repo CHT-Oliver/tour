@@ -5,7 +5,7 @@ export function initTransitionLayer() {
   if (document.querySelector(".transition-layer")) return;
   const layer = document.createElement("div");
   layer.className = "transition-layer";
-  layer.innerHTML = "<div class=\"transition-sheen\"></div>";
+  layer.innerHTML = "<div class=\"transition-sheen\"></div><div class=\"transition-veil\"></div><div class=\"transition-dust\"></div><div class=\"transition-glint\"></div><div class=\"transition-orbit\"></div>";
   layer.style.setProperty("--x", "50vw");
   layer.style.setProperty("--y", "50vh");
   layer.style.setProperty("--r", "0vmax");
@@ -34,6 +34,10 @@ export function transitionTo(url, origin = {}) {
   gsap.set(layer, { opacity: 1 });
   gsap.set(layer, { "--r": "0vmax" });
   gsap.set(".transition-sheen", { opacity: 0.15, xPercent: -30 });
+  gsap.set(".transition-veil", { opacity: 0.0 });
+  gsap.set(".transition-dust", { opacity: 0.0, scale: 1.05 });
+  gsap.set(".transition-glint", { opacity: 0.0, rotation: -6, scale: 1.05 });
+  gsap.set(".transition-orbit", { opacity: 0.0, scale: 0.9 });
 
   const tl = gsap.timeline({
     defaults: { ease: "power2.inOut" },
@@ -47,6 +51,26 @@ export function transitionTo(url, origin = {}) {
       ".transition-sheen",
       { opacity: 0.55, xPercent: 10, duration: 0.7, ease: "power2.out" },
       0.18
+    )
+    .to(
+      ".transition-veil",
+      { opacity: 0.6, duration: 0.55, ease: "power1.inOut" },
+      0.12
+    )
+    .to(
+      ".transition-dust",
+      { opacity: 0.22, scale: 1, duration: 0.7, ease: "power2.out" },
+      0.2
+    )
+    .to(
+      ".transition-glint",
+      { opacity: 0.6, rotation: 2, scale: 1, duration: 0.6, ease: "power2.out" },
+      0.16
+    )
+    .to(
+      ".transition-orbit",
+      { opacity: 0.35, scale: 1.02, duration: 0.8, ease: "power2.out" },
+      0.22
     )
     .to(
       ".transition-sheen",
@@ -63,6 +87,10 @@ export function playReveal() {
   gsap.set(layer, { opacity: 1 });
   gsap.set(layer, { "--r": "160vmax" });
   gsap.set(".transition-sheen", { opacity: 0.4, xPercent: 10 });
+  gsap.set(".transition-veil", { opacity: 0.55 });
+  gsap.set(".transition-dust", { opacity: 0.18, scale: 1 });
+  gsap.set(".transition-glint", { opacity: 0.5, rotation: 4, scale: 1 });
+  gsap.set(".transition-orbit", { opacity: 0.25, scale: 1.01 });
   gsap.to(layer, {
     "--r": "0vmax",
     duration: 1.1,
@@ -75,6 +103,29 @@ export function playReveal() {
     opacity: 0,
     xPercent: -25,
     duration: 1,
+    ease: "power2.out",
+  });
+  gsap.to(".transition-veil", {
+    opacity: 0,
+    duration: 1,
+    ease: "power2.out",
+  });
+  gsap.to(".transition-dust", {
+    opacity: 0,
+    scale: 1.02,
+    duration: 1,
+    ease: "power2.out",
+  });
+  gsap.to(".transition-glint", {
+    opacity: 0,
+    rotation: -6,
+    duration: 0.9,
+    ease: "power2.out",
+  });
+  gsap.to(".transition-orbit", {
+    opacity: 0,
+    scale: 0.98,
+    duration: 0.9,
     ease: "power2.out",
   });
 }

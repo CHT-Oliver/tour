@@ -91,16 +91,40 @@ async function loadPlaces() {
 async function initHome() {
   playReveal();
   const map = L.map("map", {
-    zoomControl: true,
-    minZoom: 1.2,
-    maxZoom: 6,
+    zoomControl: false,
+    minZoom: 1,
+    maxZoom: 7,
+    zoomSnap: 0.5,
+    zoomDelta: 0.5,
     worldCopyJump: true,
     inertia: true,
+    scrollWheelZoom: true,
+    touchZoom: true,
+    doubleClickZoom: true,
+    keyboard: true,
   }).setView([20, 10], 2);
+
+  const zoomBox = document.getElementById("lux-zoom");
+  if (zoomBox) {
+    zoomBox.querySelector('[data-zoom="in"]')?.addEventListener("click", () => map.zoomIn());
+    zoomBox.querySelector('[data-zoom="out"]')?.addEventListener("click", () => map.zoomOut());
+  }
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
     attribution: "",
+    updateWhenIdle: true,
+    updateWhenZooming: false,
+    keepBuffer: 2,
   }).addTo(map);
+
+  const mapEl = map.getContainer();
+  const setDragging = (state) => {
+    mapEl.classList.toggle("is-dragging", state);
+  };
+  map.on("movestart", () => setDragging(true));
+  map.on("moveend", () => setDragging(false));
+  map.on("zoomstart", () => setDragging(true));
+  map.on("zoomend", () => setDragging(false));
 
   const places = await loadPlaces();
   const visited = places.filter((place) => place.visited);
@@ -132,7 +156,7 @@ async function initHome() {
     if (!label) return;
     const marker = L.marker([lat, lon], {
       icon: L.divIcon({
-        className: "country-label",
+        className: "country-label leaflet-label",
         html: label,
         iconSize: [0, 0],
       }),
@@ -153,29 +177,33 @@ async function initHome() {
     });
     pinLayer.addLayer(marker);
 
-    const hoverCircle = L.circleMarker([place.lat, place.lon], {
-      radius: 28,
-      color: "transparent",
-      fillColor: "transparent",
-      fillOpacity: 0,
-      opacity: 0,
+    const labelText = `${place.name_zh} ${place.name_en}`.trim();
+    const hitWidth = Math.min(260, Math.max(140, labelText.length * 12));
+    const hitHeight = 70;
+    const hoverMarker = L.marker([place.lat, place.lon], {
+      icon: L.divIcon({
+        className: "hover-hitbox",
+        html: "",
+        iconSize: [hitWidth, hitHeight],
+        iconAnchor: [hitWidth / 2, hitHeight / 2],
+      }),
       interactive: true,
     });
-    hoverLayer.addLayer(hoverCircle);
+    hoverLayer.addLayer(hoverMarker);
 
     const tooltipHtml = `
       <span class="tooltip-title">${place.name_zh}</span>
       <span class="tooltip-sub">${place.name_en}</span>
     `;
 
-    hoverCircle.bindTooltip(tooltipHtml, {
+    hoverMarker.bindTooltip(tooltipHtml, {
       className: "lux-tooltip",
       direction: "top",
       offset: [0, -12],
       opacity: 1,
     });
 
-    hoverCircle.on("click", (event) => {
+    hoverMarker.on("click", (event) => {
       const mapRect = map.getContainer().getBoundingClientRect();
       const point = map.latLngToContainerPoint(event.latlng);
       const x = mapRect.left + point.x;
@@ -197,7 +225,7 @@ async function initHome() {
 
     const cityLabel = L.marker([place.lat, place.lon], {
       icon: L.divIcon({
-        className: "city-label",
+        className: "city-label leaflet-label",
         html: `${place.name_zh} ${place.name_en}`,
         iconSize: [0, 0],
       }),
@@ -290,6 +318,9 @@ async function initPlace() {
     GLightbox({ selector: ".glightbox", touchNavigation: true, loop: true });
   }
 
+  setupMasonry();
+  setupScrollReveal();
+
   // Page scroll handles gallery naturally.
 
   const backBtn = document.getElementById("back-to-map");
@@ -298,4 +329,87 @@ async function initPlace() {
     transitionTo("./index.html", { x: window.innerWidth * 0.5, y: 0 });
   });
 
+}
+
+function setupMasonry() {
+  const grid = document.querySelector(".gallery-masonry");
+  if (!grid) return;
+  const items = Array.from(grid.querySelectorAll("figure"));
+  if (!items.length) return;
+
+  const getSizes = () => {
+    const style = window.getComputedStyle(grid);
+    const rowHeight = parseInt(style.getPropertyValue("grid-auto-rows"), 10);
+    const rowGap = parseInt(style.getPropertyValue("row-gap"), 10);
+    return { rowHeight, rowGap };
+  };
+
+  const layout = () => {
+    const { rowHeight, rowGap } = getSizes();
+    items.forEach((item) => {
+      const contentHeight = item.getBoundingClientRect().height;
+      const span = Math.ceil((contentHeight + rowGap) / (rowHeight + rowGap));
+      item.style.gridRowEnd = `span ${span}`;
+    });
+  };
+
+  let pending = false;
+  const schedule = () => {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => {
+      layout();
+      pending = false;
+    });
+  };
+
+  const imgs = items.map((item) => item.querySelector("img")).filter(Boolean);
+  let loaded = 0;
+  imgs.forEach((img) => {
+    if (img.complete) {
+      loaded += 1;
+      if (loaded === imgs.length) schedule();
+    } else {
+      img.addEventListener("load", () => {
+        loaded += 1;
+        if (loaded === imgs.length) schedule();
+      });
+      img.addEventListener("error", () => {
+        loaded += 1;
+        if (loaded === imgs.length) schedule();
+      });
+    }
+  });
+
+  window.addEventListener("resize", schedule, { passive: true });
+  schedule();
+}
+
+function setupScrollReveal() {
+  if (prefersReducedMotion) return;
+  const targets = [
+    document.querySelector(".place-hero"),
+    ...document.querySelectorAll(".divider"),
+    ...document.querySelectorAll(".thoughts p"),
+    document.querySelector(".back-button"),
+  ].filter(Boolean);
+
+  targets.forEach((el, index) => {
+    el.classList.add("reveal");
+    el.style.transitionDelay = `${Math.min(index * 40, 240)}ms`;
+  });
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.2, rootMargin: "0px 0px -10% 0px" }
+  );
+
+  targets.forEach((el) => observer.observe(el));
 }
