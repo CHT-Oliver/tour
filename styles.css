@@ -742,16 +742,26 @@ a { color: inherit; text-decoration: none; }
 
 .is-mobile-lite .site-header,
 .is-mobile-lite .site-footer {
-  background: rgba(244, 240, 232, 0.8);
-  box-shadow: none;
+  background:
+    linear-gradient(180deg, rgba(248, 245, 238, 0.92), rgba(244, 239, 230, 0.78));
+  box-shadow: inset 0 -1px 0 rgba(191, 160, 100, 0.24);
 }
 
 .is-mobile-lite .map-frame {
-  background: #e9e2d6 !important;
+  background:
+    radial-gradient(1200px 420px at 50% 105%, rgba(199, 163, 93, 0.14), rgba(199, 163, 93, 0) 62%),
+    linear-gradient(180deg, #eee6d8 0%, #e4dbc9 100%) !important;
 }
 
 .is-mobile-lite .map-frame::before {
-  display: none !important;
+  display: block !important;
+  background:
+    linear-gradient(90deg, rgba(232, 222, 205, 0.55) 0%, rgba(232, 222, 205, 0) 14%),
+    linear-gradient(270deg, rgba(232, 222, 205, 0.55) 0%, rgba(232, 222, 205, 0) 14%),
+    linear-gradient(180deg, rgba(240, 231, 216, 0.35) 0%, rgba(240, 231, 216, 0) 11%),
+    linear-gradient(0deg, rgba(212, 196, 170, 0.35) 0%, rgba(212, 196, 170, 0) 11%);
+  mix-blend-mode: normal;
+  opacity: 0.9;
 }
 
 .is-mobile-lite .leaflet-container {
@@ -775,7 +785,43 @@ a { color: inherit; text-decoration: none; }
 }
 
 .is-mobile-lite .map-pin {
+  width: 2px;
+  height: 2px;
+  background: #fffef6;
+  box-shadow:
+    0 0 8px rgba(255, 255, 255, 1),
+    0 0 16px rgba(255, 236, 166, 1),
+    0 0 26px rgba(255, 195, 80, 0.98);
+}
+
+.is-mobile-lite .map-pin::before {
+  display: block !important;
+  inset: -5px;
+  background: radial-gradient(circle, rgba(255, 247, 206, 0.62) 0%, rgba(255, 212, 112, 0.24) 48%, rgba(255, 212, 112, 0) 72%);
+  filter: none;
   animation: none;
+}
+
+.is-mobile-lite .map-pin::after {
+  display: block !important;
+  inset: -1px;
+  border-color: rgba(255, 238, 186, 0.86);
+  box-shadow: 0 0 10px rgba(255, 218, 124, 0.9);
+  animation: none;
+}
+
+.is-mobile-lite .lux-zoom {
+  background: linear-gradient(180deg, rgba(249, 246, 240, 0.96), rgba(240, 232, 218, 0.94));
+  border: 1px solid rgba(200, 169, 106, 0.5);
+  box-shadow: 0 10px 18px rgba(22, 20, 16, 0.14);
+}
+
+.is-mobile-lite .lux-zoom .zoom-btn {
+  color: #1d2a24;
+}
+
+.is-mobile-lite .lux-zoom .zoom-btn + .zoom-btn {
+  border-top-color: rgba(200, 169, 106, 0.34);
 }
 
 @media (prefers-reduced-motion: reduce) {

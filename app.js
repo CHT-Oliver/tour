@@ -102,7 +102,7 @@ async function initHome() {
   if (!window.L) return;
   const isCoarse = IS_MOBILE_LITE;
   const isSmall = window.matchMedia("(max-width: 900px)").matches;
-  const showTextLabels = !isCoarse;
+  const showTextLabels = true;
   const initialCenter = [35.0, 104.0];
   const initialZoom = isSmall ? 3.2 : 4.0;
   const map = L.map("map", {
@@ -198,7 +198,7 @@ async function initHome() {
 
   const places = await loadPlaces();
   const visited = places.filter((place) => place.visited);
-  const cityLabelZoom = 5;
+  const cityLabelZoom = isCoarse ? 2.5 : 5;
   const countryLabelMaxZoom = 3;
   const showCountryLabels = false;
 
@@ -244,14 +244,12 @@ async function initHome() {
       <span class="tooltip-sub">${place.name_en}</span>
     `;
 
-    if (!isCoarse) {
-      hoverMarker.bindTooltip(tooltipHtml, {
-        className: "lux-tooltip",
-        direction: "top",
-        offset: [0, -12],
-        opacity: 1,
-      });
-    }
+    hoverMarker.bindTooltip(tooltipHtml, {
+      className: "lux-tooltip",
+      direction: "top",
+      offset: [0, -12],
+      opacity: 1,
+    });
 
     hoverMarker.on("click", (event) => {
       const mapRect = map.getContainer().getBoundingClientRect();
