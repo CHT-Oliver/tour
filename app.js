@@ -1,7 +1,7 @@
 import { initTransitionLayer, transitionTo, playReveal, prefersReducedMotion } from "./router/transition.js";
 const IS_COARSE = window.matchMedia("(pointer: coarse)").matches;
-const IS_MOBILE_LITE = IS_COARSE || window.matchMedia("(max-width: 900px)").matches;
-if (IS_MOBILE_LITE) {
+const IS_MOBILE_VIEWPORT = window.matchMedia("(max-width: 900px)").matches;
+if (IS_COARSE || IS_MOBILE_VIEWPORT) {
   document.documentElement.classList.add("is-mobile-lite");
 }
 
@@ -68,11 +68,9 @@ const DEFAULT_PLACES = [
   },
 ];
 
-if (!IS_MOBILE_LITE) {
-  initTransitionLayer();
-}
+initTransitionLayer();
 window.addEventListener("pageshow", (event) => {
-  if (!IS_MOBILE_LITE && event.persisted) {
+  if (event.persisted) {
     playReveal();
   }
 });
@@ -96,11 +94,8 @@ async function loadPlaces() {
 }
 
 async function initHome() {
-  if (!IS_MOBILE_LITE) {
-    playReveal();
-  }
+  playReveal();
   if (!window.L) return;
-  const isCoarse = IS_MOBILE_LITE;
   const isSmall = window.matchMedia("(max-width: 900px)").matches;
   const showTextLabels = true;
   const initialCenter = [35.0, 104.0];
@@ -108,20 +103,20 @@ async function initHome() {
   const map = L.map("map", {
     zoomControl: false,
     attributionControl: false,
-    minZoom: isSmall ? 2 : 1.2,
-    maxZoom: isSmall ? 6 : 12,
-    zoomSnap: isCoarse ? 1 : 0.5,
-    zoomDelta: isCoarse ? 1 : 0.5,
+    minZoom: 1.2,
+    maxZoom: 12,
+    zoomSnap: 0.5,
+    zoomDelta: 0.5,
     worldCopyJump: false,
-    inertia: !isCoarse,
-    scrollWheelZoom: !isCoarse,
-    touchZoom: isCoarse ? "center" : true,
-    doubleClickZoom: !isCoarse,
-    keyboard: !isCoarse,
-    preferCanvas: isCoarse,
-    zoomAnimation: !isCoarse,
-    fadeAnimation: !isCoarse,
-    markerZoomAnimation: !isCoarse,
+    inertia: true,
+    scrollWheelZoom: true,
+    touchZoom: true,
+    doubleClickZoom: true,
+    keyboard: true,
+    preferCanvas: false,
+    zoomAnimation: true,
+    fadeAnimation: true,
+    markerZoomAnimation: true,
     bounceAtZoomLimits: false,
   }).setView(initialCenter, initialZoom);
   const bounds = L.latLngBounds([[-85.0511, -180], [85.0511, 180]]);
@@ -138,12 +133,12 @@ async function initHome() {
   const tileUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png";
   const primaryTiles = L.tileLayer(tileUrl, {
     attribution: "",
-    updateWhenIdle: !isCoarse,
+    updateWhenIdle: true,
     updateWhenZooming: false,
-    keepBuffer: isCoarse ? 3 : 2,
-    updateInterval: isCoarse ? 220 : 150,
-    detectRetina: !isCoarse,
-    maxNativeZoom: isCoarse ? 6 : 19,
+    keepBuffer: 2,
+    updateInterval: 150,
+    detectRetina: true,
+    maxNativeZoom: 19,
     noWrap: true,
     bounds,
   }).addTo(map);
@@ -152,12 +147,12 @@ async function initHome() {
   let switchedToFallback = false;
   const fallbackTiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "",
-    updateWhenIdle: !isCoarse,
+    updateWhenIdle: true,
     updateWhenZooming: false,
-    keepBuffer: isCoarse ? 3 : 2,
-    updateInterval: isCoarse ? 220 : 150,
+    keepBuffer: 2,
+    updateInterval: 150,
     detectRetina: false,
-    maxNativeZoom: isCoarse ? 6 : 19,
+    maxNativeZoom: 19,
     noWrap: true,
     bounds,
   });
@@ -198,7 +193,7 @@ async function initHome() {
 
   const places = await loadPlaces();
   const visited = places.filter((place) => place.visited);
-  const cityLabelZoom = isCoarse ? 2.5 : 5;
+  const cityLabelZoom = 0;
   const countryLabelMaxZoom = 3;
   const showCountryLabels = false;
 
@@ -257,7 +252,7 @@ async function initHome() {
       const x = mapRect.left + point.x;
       const y = mapRect.top + point.y;
       const pinEl = marker.getElement()?.querySelector(".map-pin");
-      if (!isCoarse && pinEl && window.gsap) {
+      if (pinEl && window.gsap) {
         gsap.to(pinEl, {
           scale: 1.6,
           boxShadow: "0 0 22px rgba(220, 190, 130, 0.95)",
@@ -305,11 +300,8 @@ async function initHome() {
 }
 
 async function initPlace() {
-  if (!IS_MOBILE_LITE) {
-    playReveal();
-  }
-  const isCoarse = IS_MOBILE_LITE;
-  const lenis = !prefersReducedMotion && !isCoarse && window.Lenis ? new Lenis({ smoothWheel: true, duration: 1.2 }) : null;
+  playReveal();
+  const lenis = !prefersReducedMotion && window.Lenis ? new Lenis({ smoothWheel: true, duration: 1.2 }) : null;
   if (lenis) {
     const raf = (time) => {
       lenis.raf(time);
@@ -354,7 +346,7 @@ async function initPlace() {
 
   galleryEl.innerHTML = place.photos
     .map((photo, index) => {
-      const eager = isCoarse ? index < 3 : index < 2;
+      const eager = index < 2;
       const loadingAttr = eager ? "eager" : "lazy";
       const fetchPriority = eager && index === 0 ? "high" : "auto";
       return `
@@ -391,24 +383,18 @@ async function initPlace() {
     .map((text, index) => `<p class=\"${index === 0 ? "dropcap" : ""}\">${text}</p>`)
     .join("");
 
-  if (!isCoarse && window.GLightbox) {
+  if (window.GLightbox) {
     GLightbox({ selector: ".glightbox", touchNavigation: true, loop: true });
   }
 
-  if (!isCoarse) {
-    setupMasonry();
-    setupScrollReveal();
-  }
+  setupMasonry();
+  setupScrollReveal();
 
   // Page scroll handles gallery naturally.
 
   const backBtn = document.getElementById("back-to-map");
   backBtn.addEventListener("click", (event) => {
     event.preventDefault();
-    if (isCoarse) {
-      window.location.href = "./index.html";
-      return;
-    }
     transitionTo("./index.html", { x: window.innerWidth * 0.5, y: 0 });
   });
 
