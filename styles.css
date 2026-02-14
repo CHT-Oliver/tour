@@ -712,8 +712,54 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (pointer: coarse) {
-  body::before { opacity: 0.08; }
-  .leaflet-tile-pane { filter: saturate(0.96) contrast(0.99); }
+  body::before { display: none; }
+  .map-frame {
+    background: #e9e2d6;
+  }
+  .map-frame::before { display: none; }
+  .leaflet-container {
+    background: #e8e1d4;
+  }
+  .leaflet-tile-pane { filter: none; }
+  .map-pin {
+    box-shadow: 0 0 10px rgba(255, 220, 132, 0.95);
+  }
+  .map-pin::after,
+  .map-pin::before {
+    display: none;
+    animation: none;
+    filter: none;
+  }
+  .lux-zoom {
+    backdrop-filter: none;
+    box-shadow: 0 8px 16px rgba(18, 18, 18, 0.14);
+  }
+  .site-header,
+  .site-footer {
+    backdrop-filter: none;
+  }
+}
+
+.is-mobile-lite .site-header,
+.is-mobile-lite .site-footer {
+  background: rgba(244, 240, 232, 0.8);
+  box-shadow: none;
+}
+
+.is-mobile-lite .home-hero,
+.is-mobile-lite .divider,
+.is-mobile-lite .back-button,
+.is-mobile-lite .gallery-masonry figure {
+  box-shadow: none;
+  filter: none;
+}
+
+.is-mobile-lite .gallery-masonry figure {
+  transform: none !important;
+}
+
+.is-mobile-lite .map-pin {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

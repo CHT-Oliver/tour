@@ -1,4 +1,8 @@
 import { initTransitionLayer, transitionTo, playReveal, prefersReducedMotion } from "./router/transition.js";
+const IS_COARSE = window.matchMedia("(pointer: coarse)").matches;
+if (IS_COARSE) {
+  document.documentElement.classList.add("is-mobile-lite");
+}
 
 const DEFAULT_PLACES = [
   {
@@ -63,9 +67,11 @@ const DEFAULT_PLACES = [
   },
 ];
 
-initTransitionLayer();
+if (!IS_COARSE) {
+  initTransitionLayer();
+}
 window.addEventListener("pageshow", (event) => {
-  if (event.persisted) {
+  if (!IS_COARSE && event.persisted) {
     playReveal();
   }
 });
@@ -89,18 +95,20 @@ async function loadPlaces() {
 }
 
 async function initHome() {
-  playReveal();
+  if (!IS_COARSE) {
+    playReveal();
+  }
   if (!window.L) return;
-  const isCoarse = window.matchMedia("(pointer: coarse)").matches;
+  const isCoarse = IS_COARSE;
   const isSmall = window.matchMedia("(max-width: 900px)").matches;
   const showTextLabels = !isCoarse;
   const initialCenter = [35.0, 104.0];
-  const initialZoom = isSmall ? 3.5 : 4.0;
+  const initialZoom = isSmall ? 3.2 : 4.0;
   const map = L.map("map", {
     zoomControl: false,
     attributionControl: false,
-    minZoom: isSmall ? 1.4 : 1.2,
-    maxZoom: isSmall ? 9 : 12,
+    minZoom: isSmall ? 1.8 : 1.2,
+    maxZoom: isSmall ? 8 : 12,
     zoomSnap: isCoarse ? 1 : 0.5,
     zoomDelta: isCoarse ? 1 : 0.5,
     worldCopyJump: false,
@@ -109,10 +117,11 @@ async function initHome() {
     touchZoom: true,
     doubleClickZoom: !isCoarse,
     keyboard: !isCoarse,
-    preferCanvas: true,
+    preferCanvas: isCoarse,
     zoomAnimation: !isCoarse,
     fadeAnimation: !isCoarse,
     markerZoomAnimation: !isCoarse,
+    bounceAtZoomLimits: false,
   }).setView(initialCenter, initialZoom);
   const bounds = L.latLngBounds([[-85.0511, -180], [85.0511, 180]]);
   map.setMaxBounds(bounds);
@@ -125,15 +134,54 @@ async function initHome() {
     zoomBox.querySelector('[data-zoom="out"]')?.addEventListener("click", () => map.zoomOut());
   }
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png", {
+  const tileUrl = isCoarse
+    ? "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png";
+  const primaryTiles = L.tileLayer(tileUrl, {
     attribution: "",
     updateWhenIdle: true,
     updateWhenZooming: false,
-    keepBuffer: isSmall ? 1 : 2,
+    keepBuffer: isCoarse ? 1 : 2,
+    updateInterval: isCoarse ? 300 : 150,
     detectRetina: !isCoarse,
+    maxNativeZoom: isCoarse ? 7 : 19,
     noWrap: true,
     bounds,
   }).addTo(map);
+
+  // Fallback on unstable mobile networks to avoid blank tile patches.
+  let switchedToFallback = false;
+  const fallbackTiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "",
+    updateWhenIdle: true,
+    updateWhenZooming: false,
+    keepBuffer: isCoarse ? 1 : 2,
+    updateInterval: isCoarse ? 300 : 150,
+    detectRetina: false,
+    maxNativeZoom: 7,
+    noWrap: true,
+    bounds,
+  });
+
+  primaryTiles.on("tileerror", () => {
+    if (switchedToFallback) return;
+    if (isCoarse) return;
+    switchedToFallback = true;
+    if (map.hasLayer(primaryTiles)) {
+      map.removeLayer(primaryTiles);
+    }
+    fallbackTiles.addTo(map);
+  });
+
+  // Mobile browsers can report wrong map size during URL bar transitions.
+  const syncMapSize = () => map.invalidateSize({ pan: false, animate: false });
+  setTimeout(syncMapSize, 120);
+  window.addEventListener("resize", syncMapSize, { passive: true });
+  window.addEventListener(
+    "orientationchange",
+    () => setTimeout(syncMapSize, 220),
+    { passive: true }
+  );
 
   const mapEl = map.getContainer();
   const setDragging = (state) => {
@@ -261,9 +309,11 @@ async function initHome() {
 }
 
 async function initPlace() {
-  playReveal();
-  const isCoarse = window.matchMedia("(pointer: coarse)").matches;
-  const lenis = !prefersReducedMotion && window.Lenis ? new Lenis({ smoothWheel: true, duration: 1.2 }) : null;
+  if (!IS_COARSE) {
+    playReveal();
+  }
+  const isCoarse = IS_COARSE;
+  const lenis = !prefersReducedMotion && !isCoarse && window.Lenis ? new Lenis({ smoothWheel: true, duration: 1.2 }) : null;
   if (lenis) {
     const raf = (time) => {
       lenis.raf(time);
@@ -345,18 +395,24 @@ async function initPlace() {
     .map((text, index) => `<p class=\"${index === 0 ? "dropcap" : ""}\">${text}</p>`)
     .join("");
 
-  if (window.GLightbox) {
+  if (!isCoarse && window.GLightbox) {
     GLightbox({ selector: ".glightbox", touchNavigation: true, loop: true });
   }
 
-  setupMasonry();
-  setupScrollReveal();
+  if (!isCoarse) {
+    setupMasonry();
+    setupScrollReveal();
+  }
 
   // Page scroll handles gallery naturally.
 
   const backBtn = document.getElementById("back-to-map");
   backBtn.addEventListener("click", (event) => {
     event.preventDefault();
+    if (isCoarse) {
+      window.location.href = "./index.html";
+      return;
+    }
     transitionTo("./index.html", { x: window.innerWidth * 0.5, y: 0 });
   });
 
