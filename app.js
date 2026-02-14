@@ -1,9 +1,4 @@
 import { initTransitionLayer, transitionTo, playReveal, prefersReducedMotion } from "./router/transition.js";
-const IS_COARSE = window.matchMedia("(pointer: coarse)").matches;
-const IS_MOBILE_VIEWPORT = window.matchMedia("(max-width: 900px)").matches;
-if (IS_COARSE || IS_MOBILE_VIEWPORT) {
-  document.documentElement.classList.add("is-mobile-lite");
-}
 
 const DEFAULT_PLACES = [
   {
@@ -96,10 +91,9 @@ async function loadPlaces() {
 async function initHome() {
   playReveal();
   if (!window.L) return;
-  const isSmall = window.matchMedia("(max-width: 900px)").matches;
   const showTextLabels = true;
   const initialCenter = [35.0, 104.0];
-  const initialZoom = isSmall ? 3.2 : 4.0;
+  const initialZoom = 4.0;
   const map = L.map("map", {
     zoomControl: false,
     attributionControl: false,
@@ -405,13 +399,6 @@ function setupMasonry() {
   if (!grid) return;
   const items = Array.from(grid.querySelectorAll("figure"));
   if (!items.length) return;
-  const isNarrow = window.matchMedia("(max-width: 700px)").matches;
-  if (isNarrow) {
-    items.forEach((item) => {
-      item.style.gridRowEnd = "auto";
-    });
-    return;
-  }
 
   const getSizes = () => {
     const style = window.getComputedStyle(grid);
