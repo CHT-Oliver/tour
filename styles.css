@@ -735,15 +735,6 @@ a { color: inherit; text-decoration: none; }
     background: #c7d8de;
   }
   .leaflet-tile-pane { filter: none; }
-  .map-pin {
-    box-shadow: 0 0 10px rgba(255, 220, 132, 0.95);
-  }
-  .map-pin::after,
-  .map-pin::before {
-    display: none;
-    animation: none;
-    filter: none;
-  }
   .lux-zoom {
     backdrop-filter: none;
     box-shadow: 0 8px 16px rgba(18, 18, 18, 0.14);
@@ -796,32 +787,6 @@ a { color: inherit; text-decoration: none; }
 
 .is-mobile-lite .gallery-masonry figure {
   transform: none !important;
-}
-
-.is-mobile-lite .map-pin {
-  width: 2px;
-  height: 2px;
-  background: #fffef6;
-  box-shadow:
-    0 0 8px rgba(255, 255, 255, 1),
-    0 0 16px rgba(255, 236, 166, 1),
-    0 0 26px rgba(255, 195, 80, 0.98);
-}
-
-.is-mobile-lite .map-pin::before {
-  display: block !important;
-  inset: -5px;
-  background: radial-gradient(circle, rgba(255, 247, 206, 0.62) 0%, rgba(255, 212, 112, 0.24) 48%, rgba(255, 212, 112, 0) 72%);
-  filter: none;
-  animation: none;
-}
-
-.is-mobile-lite .map-pin::after {
-  display: block !important;
-  inset: -1px;
-  border-color: rgba(255, 238, 186, 0.86);
-  box-shadow: 0 0 10px rgba(255, 218, 124, 0.9);
-  animation: none;
 }
 
 .is-mobile-lite .lux-zoom {

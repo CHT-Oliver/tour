@@ -193,7 +193,7 @@ async function initHome() {
 
   const places = await loadPlaces();
   const visited = places.filter((place) => place.visited);
-  const cityLabelZoom = 0;
+  const cityLabelZoom = 5;
   const countryLabelMaxZoom = 3;
   const showCountryLabels = false;
 
