@@ -110,10 +110,10 @@ async function initHome() {
     fadeAnimation: !isCoarse,
     markerZoomAnimation: !isCoarse,
   }).setView([20, 10], 2);
-  const bounds = L.latLngBounds([[-85, -180], [85, 180]]);
+  const bounds = L.latLngBounds([[-72, -180], [78, 180]]);
   map.setMaxBounds(bounds);
   map.options.maxBoundsViscosity = 1.0;
-  map.fitBounds([[-55, -150], [70, 150]], { padding: [20, 20] });
+  map.fitBounds([[-52, -150], [68, 150]], { padding: [20, 20] });
 
   const zoomBox = document.getElementById("lux-zoom");
   if (zoomBox) {
@@ -135,9 +135,15 @@ async function initHome() {
     mapEl.classList.toggle("is-dragging", state);
   };
   map.on("movestart", () => setDragging(true));
-  map.on("moveend", () => setDragging(false));
+  map.on("moveend", () => {
+    setDragging(false);
+    map.panInsideBounds(bounds, { animate: false });
+  });
   map.on("zoomstart", () => setDragging(true));
-  map.on("zoomend", () => setDragging(false));
+  map.on("zoomend", () => {
+    setDragging(false);
+    map.panInsideBounds(bounds, { animate: false });
+  });
 
   const places = await loadPlaces();
   const visited = places.filter((place) => place.visited);
