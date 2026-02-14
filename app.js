@@ -98,6 +98,7 @@ async function initHome() {
   const initialZoom = isSmall ? 3.5 : 4.0;
   const map = L.map("map", {
     zoomControl: false,
+    attributionControl: false,
     minZoom: isSmall ? 1.4 : 1.2,
     maxZoom: isSmall ? 10 : 12,
     zoomSnap: 0.5,
@@ -153,6 +154,7 @@ async function initHome() {
   const visited = places.filter((place) => place.visited);
   const cityLabelZoom = 5;
   const countryLabelMaxZoom = 3;
+  const showCountryLabels = false;
 
   const hoverLayer = L.layerGroup().addTo(map);
   const pinLayer = L.layerGroup().addTo(map);
@@ -163,36 +165,7 @@ async function initHome() {
     countryLabelLayer.addTo(map);
   }
 
-  const countries = new Map();
-  visited.forEach((place) => {
-    const countryZh = place.country_zh;
-    const countryEn = place.country_en;
-    if (!countryZh && !countryEn) return;
-    const key = `${countryZh || ""}|${countryEn || ""}`;
-    const item = countries.get(key) || { lat: 0, lon: 0, count: 0, countryZh, countryEn };
-    item.lat += place.lat;
-    item.lon += place.lon;
-    item.count += 1;
-    countries.set(key, item);
-  });
-
-  if (showTextLabels) {
-    countries.forEach((item) => {
-      const lat = item.lat / item.count;
-      const lon = item.lon / item.count;
-      const label = `${item.countryZh || ""} ${item.countryEn || ""}`.trim();
-      if (!label) return;
-      const marker = L.marker([lat, lon], {
-      icon: L.divIcon({
-        className: "country-label leaflet-label",
-        html: label,
-        iconSize: [0, 0],
-      }),
-      interactive: false,
-      });
-      countryLabelLayer.addLayer(marker);
-    });
-  }
+  // Country labels are intentionally disabled by request.
 
   visited.forEach((place) => {
     const marker = L.marker([place.lat, place.lon], {
@@ -270,7 +243,7 @@ async function initHome() {
   const updateLabelVisibility = () => {
     if (!showTextLabels) return;
     const zoom = map.getZoom();
-    if (zoom <= countryLabelMaxZoom) {
+    if (showCountryLabels && zoom <= countryLabelMaxZoom) {
       if (!map.hasLayer(countryLabelLayer)) map.addLayer(countryLabelLayer);
     } else {
       if (map.hasLayer(countryLabelLayer)) map.removeLayer(countryLabelLayer);
@@ -289,6 +262,7 @@ async function initHome() {
 
 async function initPlace() {
   playReveal();
+  const isCoarse = window.matchMedia("(pointer: coarse)").matches;
   const lenis = !prefersReducedMotion && window.Lenis ? new Lenis({ smoothWheel: true, duration: 1.2 }) : null;
   if (lenis) {
     const raf = (time) => {
@@ -333,16 +307,39 @@ async function initPlace() {
   }
 
   galleryEl.innerHTML = place.photos
-    .map(
-      (photo) => `
+    .map((photo, index) => {
+      const eager = isCoarse ? index < 3 : index < 2;
+      const loadingAttr = eager ? "eager" : "lazy";
+      const fetchPriority = eager && index === 0 ? "high" : "auto";
+      return `
         <figure>
           <a href="${photo}" class="glightbox" data-gallery="${place.slug}">
-            <img src="${photo}" alt="${place.name_en}" loading="lazy" />
+            <img
+              src="${photo}"
+              alt="${place.name_en}"
+              loading="${loadingAttr}"
+              fetchpriority="${fetchPriority}"
+              decoding="async"
+              draggable="false"
+            />
           </a>
         </figure>
       `
-    )
+    })
     .join("");
+
+  // Mark images as loaded to remove placeholder effect incrementally.
+  galleryEl.querySelectorAll("img").forEach((img) => {
+    const markLoaded = () => {
+      img.closest("figure")?.classList.add("is-loaded");
+    };
+    if (img.complete) {
+      markLoaded();
+    } else {
+      img.addEventListener("load", markLoaded, { once: true });
+      img.addEventListener("error", markLoaded, { once: true });
+    }
+  });
 
   thoughtsEl.innerHTML = place.thoughts
     .map((text, index) => `<p class=\"${index === 0 ? "dropcap" : ""}\">${text}</p>`)
