@@ -93,10 +93,13 @@ async function initHome() {
   if (!window.L) return;
   const isCoarse = window.matchMedia("(pointer: coarse)").matches;
   const isSmall = window.matchMedia("(max-width: 900px)").matches;
+  const showTextLabels = !isCoarse;
+  const initialCenter = [35.0, 104.0];
+  const initialZoom = isSmall ? 3.5 : 4.0;
   const map = L.map("map", {
     zoomControl: false,
-    minZoom: 1.6,
-    maxZoom: 6,
+    minZoom: isSmall ? 1.4 : 1.2,
+    maxZoom: isSmall ? 10 : 12,
     zoomSnap: 0.5,
     zoomDelta: 0.5,
     worldCopyJump: false,
@@ -109,11 +112,11 @@ async function initHome() {
     zoomAnimation: !isCoarse,
     fadeAnimation: !isCoarse,
     markerZoomAnimation: !isCoarse,
-  }).setView([20, 10], 2);
-  const bounds = L.latLngBounds([[-72, -180], [78, 180]]);
+  }).setView(initialCenter, initialZoom);
+  const bounds = L.latLngBounds([[-85.0511, -180], [85.0511, 180]]);
   map.setMaxBounds(bounds);
   map.options.maxBoundsViscosity = 1.0;
-  map.fitBounds([[-52, -150], [68, 150]], { padding: [20, 20] });
+  map.setView(initialCenter, initialZoom, { animate: false });
 
   const zoomBox = document.getElementById("lux-zoom");
   if (zoomBox) {
@@ -123,9 +126,10 @@ async function initHome() {
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png", {
     attribution: "",
-    updateWhenIdle: !isCoarse,
+    updateWhenIdle: true,
     updateWhenZooming: false,
     keepBuffer: isSmall ? 1 : 2,
+    detectRetina: !isCoarse,
     noWrap: true,
     bounds,
   }).addTo(map);
@@ -152,8 +156,12 @@ async function initHome() {
 
   const hoverLayer = L.layerGroup().addTo(map);
   const pinLayer = L.layerGroup().addTo(map);
-  const cityLabelLayer = L.layerGroup().addTo(map);
-  const countryLabelLayer = L.layerGroup().addTo(map);
+  const cityLabelLayer = L.layerGroup();
+  const countryLabelLayer = L.layerGroup();
+  if (showTextLabels) {
+    cityLabelLayer.addTo(map);
+    countryLabelLayer.addTo(map);
+  }
 
   const countries = new Map();
   visited.forEach((place) => {
@@ -168,21 +176,23 @@ async function initHome() {
     countries.set(key, item);
   });
 
-  countries.forEach((item) => {
-    const lat = item.lat / item.count;
-    const lon = item.lon / item.count;
-    const label = `${item.countryZh || ""} ${item.countryEn || ""}`.trim();
-    if (!label) return;
-    const marker = L.marker([lat, lon], {
+  if (showTextLabels) {
+    countries.forEach((item) => {
+      const lat = item.lat / item.count;
+      const lon = item.lon / item.count;
+      const label = `${item.countryZh || ""} ${item.countryEn || ""}`.trim();
+      if (!label) return;
+      const marker = L.marker([lat, lon], {
       icon: L.divIcon({
         className: "country-label leaflet-label",
         html: label,
         iconSize: [0, 0],
       }),
       interactive: false,
+      });
+      countryLabelLayer.addLayer(marker);
     });
-    countryLabelLayer.addLayer(marker);
-  });
+  }
 
   visited.forEach((place) => {
     const marker = L.marker([place.lat, place.lon], {
@@ -215,12 +225,14 @@ async function initHome() {
       <span class="tooltip-sub">${place.name_en}</span>
     `;
 
-    hoverMarker.bindTooltip(tooltipHtml, {
-      className: "lux-tooltip",
-      direction: "top",
-      offset: [0, -12],
-      opacity: 1,
-    });
+    if (!isCoarse) {
+      hoverMarker.bindTooltip(tooltipHtml, {
+        className: "lux-tooltip",
+        direction: "top",
+        offset: [0, -12],
+        opacity: 1,
+      });
+    }
 
     hoverMarker.on("click", (event) => {
       const mapRect = map.getContainer().getBoundingClientRect();
@@ -228,7 +240,7 @@ async function initHome() {
       const x = mapRect.left + point.x;
       const y = mapRect.top + point.y;
       const pinEl = marker.getElement()?.querySelector(".map-pin");
-      if (pinEl && window.gsap) {
+      if (!isCoarse && pinEl && window.gsap) {
         gsap.to(pinEl, {
           scale: 1.6,
           boxShadow: "0 0 22px rgba(220, 190, 130, 0.95)",
@@ -242,18 +254,21 @@ async function initHome() {
       transitionTo(`./place.html?slug=${place.slug}`, { x, y });
     });
 
-    const cityLabel = L.marker([place.lat, place.lon], {
-      icon: L.divIcon({
-        className: "city-label leaflet-label",
-        html: `${place.name_zh} ${place.name_en}`,
-        iconSize: [0, 0],
-      }),
-      interactive: false,
-    });
-    cityLabelLayer.addLayer(cityLabel);
+    if (showTextLabels) {
+      const cityLabel = L.marker([place.lat, place.lon], {
+        icon: L.divIcon({
+          className: "city-label leaflet-label",
+          html: `${place.name_zh} ${place.name_en}`,
+          iconSize: [0, 0],
+        }),
+        interactive: false,
+      });
+      cityLabelLayer.addLayer(cityLabel);
+    }
   });
 
   const updateLabelVisibility = () => {
+    if (!showTextLabels) return;
     const zoom = map.getZoom();
     if (zoom <= countryLabelMaxZoom) {
       if (!map.hasLayer(countryLabelLayer)) map.addLayer(countryLabelLayer);
