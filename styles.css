@@ -718,7 +718,7 @@ a { color: inherit; text-decoration: none; }
   }
   .map-frame::before { display: none; }
   .leaflet-container {
-    background: #e8e1d4;
+    background: #c7d8de;
   }
   .leaflet-tile-pane { filter: none; }
   .map-pin {
@@ -744,6 +744,22 @@ a { color: inherit; text-decoration: none; }
 .is-mobile-lite .site-footer {
   background: rgba(244, 240, 232, 0.8);
   box-shadow: none;
+}
+
+.is-mobile-lite .map-frame {
+  background: #e9e2d6 !important;
+}
+
+.is-mobile-lite .map-frame::before {
+  display: none !important;
+}
+
+.is-mobile-lite .leaflet-container {
+  background: #c7d8de !important;
+}
+
+.is-mobile-lite .leaflet-tile-pane {
+  filter: none !important;
 }
 
 .is-mobile-lite .home-hero,

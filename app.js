@@ -1,6 +1,7 @@
 import { initTransitionLayer, transitionTo, playReveal, prefersReducedMotion } from "./router/transition.js";
 const IS_COARSE = window.matchMedia("(pointer: coarse)").matches;
-if (IS_COARSE) {
+const IS_MOBILE_LITE = IS_COARSE || window.matchMedia("(max-width: 900px)").matches;
+if (IS_MOBILE_LITE) {
   document.documentElement.classList.add("is-mobile-lite");
 }
 
@@ -67,11 +68,11 @@ const DEFAULT_PLACES = [
   },
 ];
 
-if (!IS_COARSE) {
+if (!IS_MOBILE_LITE) {
   initTransitionLayer();
 }
 window.addEventListener("pageshow", (event) => {
-  if (!IS_COARSE && event.persisted) {
+  if (!IS_MOBILE_LITE && event.persisted) {
     playReveal();
   }
 });
@@ -95,11 +96,11 @@ async function loadPlaces() {
 }
 
 async function initHome() {
-  if (!IS_COARSE) {
+  if (!IS_MOBILE_LITE) {
     playReveal();
   }
   if (!window.L) return;
-  const isCoarse = IS_COARSE;
+  const isCoarse = IS_MOBILE_LITE;
   const isSmall = window.matchMedia("(max-width: 900px)").matches;
   const showTextLabels = !isCoarse;
   const initialCenter = [35.0, 104.0];
@@ -107,14 +108,14 @@ async function initHome() {
   const map = L.map("map", {
     zoomControl: false,
     attributionControl: false,
-    minZoom: isSmall ? 1.8 : 1.2,
-    maxZoom: isSmall ? 8 : 12,
+    minZoom: isSmall ? 2 : 1.2,
+    maxZoom: isSmall ? 6 : 12,
     zoomSnap: isCoarse ? 1 : 0.5,
     zoomDelta: isCoarse ? 1 : 0.5,
     worldCopyJump: false,
     inertia: !isCoarse,
     scrollWheelZoom: !isCoarse,
-    touchZoom: true,
+    touchZoom: isCoarse ? "center" : true,
     doubleClickZoom: !isCoarse,
     keyboard: !isCoarse,
     preferCanvas: isCoarse,
@@ -134,17 +135,15 @@ async function initHome() {
     zoomBox.querySelector('[data-zoom="out"]')?.addEventListener("click", () => map.zoomOut());
   }
 
-  const tileUrl = isCoarse
-    ? "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-    : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png";
+  const tileUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png";
   const primaryTiles = L.tileLayer(tileUrl, {
     attribution: "",
-    updateWhenIdle: true,
+    updateWhenIdle: !isCoarse,
     updateWhenZooming: false,
-    keepBuffer: isCoarse ? 1 : 2,
-    updateInterval: isCoarse ? 300 : 150,
+    keepBuffer: isCoarse ? 3 : 2,
+    updateInterval: isCoarse ? 220 : 150,
     detectRetina: !isCoarse,
-    maxNativeZoom: isCoarse ? 7 : 19,
+    maxNativeZoom: isCoarse ? 6 : 19,
     noWrap: true,
     bounds,
   }).addTo(map);
@@ -153,19 +152,18 @@ async function initHome() {
   let switchedToFallback = false;
   const fallbackTiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "",
-    updateWhenIdle: true,
+    updateWhenIdle: !isCoarse,
     updateWhenZooming: false,
-    keepBuffer: isCoarse ? 1 : 2,
-    updateInterval: isCoarse ? 300 : 150,
+    keepBuffer: isCoarse ? 3 : 2,
+    updateInterval: isCoarse ? 220 : 150,
     detectRetina: false,
-    maxNativeZoom: 7,
+    maxNativeZoom: isCoarse ? 6 : 19,
     noWrap: true,
     bounds,
   });
 
   primaryTiles.on("tileerror", () => {
     if (switchedToFallback) return;
-    if (isCoarse) return;
     switchedToFallback = true;
     if (map.hasLayer(primaryTiles)) {
       map.removeLayer(primaryTiles);
@@ -309,10 +307,10 @@ async function initHome() {
 }
 
 async function initPlace() {
-  if (!IS_COARSE) {
+  if (!IS_MOBILE_LITE) {
     playReveal();
   }
-  const isCoarse = IS_COARSE;
+  const isCoarse = IS_MOBILE_LITE;
   const lenis = !prefersReducedMotion && !isCoarse && window.Lenis ? new Lenis({ smoothWheel: true, duration: 1.2 }) : null;
   if (lenis) {
     const raf = (time) => {
