@@ -191,5 +191,38 @@
     ],
     "country_zh": "新加坡",
     "country_en": "Singapore"
+  },
+  {
+    "slug": "kualalumpur",
+    "name_zh": "吉隆坡",
+    "name_en": "Kuala Lumpur",
+    "lat": 3.139,
+    "lon": 101.6869,
+    "visited": true,
+    "date_range": "2025.01-2025.12",
+    "tags": [
+      "Skyline",
+      "Street",
+      "Culture"
+    ],
+    "quote": "热雨过后，城市天际线像被重新抛光。",
+    "thoughts": [
+      "吉隆坡的城市肌理很有反差，高楼与老街并存。",
+      "本地饮食和街头生活感很强，适合连续记录。"
+    ],
+    "photos": [
+      "./assets/photos/Malaysia/Kuala Lumpur/01.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/02.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/03.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/04.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/05.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/06.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/07.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/08.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/09.jpg",
+      "./assets/photos/Malaysia/Kuala Lumpur/10.jpg"
+    ],
+    "country_zh": "马来西亚",
+    "country_en": "Malaysia"
   }
 ]
