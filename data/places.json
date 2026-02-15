@@ -141,5 +141,55 @@
     ],
     "country_zh": "韩国",
     "country_en": "South Korea"
+  },
+  {
+    "slug": "singapore",
+    "name_zh": "新加坡",
+    "name_en": "Singapore",
+    "lat": 1.29027,
+    "lon": 103.851959,
+    "visited": true,
+    "date_range": "2025.01-2025.12",
+    "tags": [
+      "City",
+      "Garden",
+      "Night"
+    ],
+    "quote": "热带夜风里，城市与花园无缝相连。",
+    "thoughts": [
+      "新加坡的街区整洁而高效，建筑和绿化结合得很紧密。",
+      "滨海区域的夜景层次丰富，适合慢走拍摄。"
+    ],
+    "photos": [
+      "./assets/photos/Singapore/01.jpg",
+      "./assets/photos/Singapore/02.jpg",
+      "./assets/photos/Singapore/03.jpg",
+      "./assets/photos/Singapore/04.jpg",
+      "./assets/photos/Singapore/05.jpg",
+      "./assets/photos/Singapore/06.jpg",
+      "./assets/photos/Singapore/07.jpg",
+      "./assets/photos/Singapore/08.jpg",
+      "./assets/photos/Singapore/09.jpg",
+      "./assets/photos/Singapore/10.jpg",
+      "./assets/photos/Singapore/11.jpg",
+      "./assets/photos/Singapore/12.jpg",
+      "./assets/photos/Singapore/13.jpg",
+      "./assets/photos/Singapore/14.jpg",
+      "./assets/photos/Singapore/15.jpg",
+      "./assets/photos/Singapore/16.jpg",
+      "./assets/photos/Singapore/17.jpg",
+      "./assets/photos/Singapore/18.jpg",
+      "./assets/photos/Singapore/19.jpg",
+      "./assets/photos/Singapore/20.jpg",
+      "./assets/photos/Singapore/21.jpg",
+      "./assets/photos/Singapore/22.jpg",
+      "./assets/photos/Singapore/23.jpg",
+      "./assets/photos/Singapore/24.jpg",
+      "./assets/photos/Singapore/25.jpg",
+      "./assets/photos/Singapore/26.jpg",
+      "./assets/photos/Singapore/27.jpg"
+    ],
+    "country_zh": "新加坡",
+    "country_en": "Singapore"
   }
 ]
