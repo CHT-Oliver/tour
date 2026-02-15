@@ -1228,5 +1228,57 @@
     ],
     "country_zh": "中国",
     "country_en": "China"
+  },
+  {
+    "slug": "suzhou",
+    "name_zh": "苏州",
+    "name_en": "Suzhou",
+    "lat": 31.2989,
+    "lon": 120.5853,
+    "visited": true,
+    "date_range": "2025.02",
+    "tags": [
+      "Garden",
+      "Canal",
+      "Jiangnan"
+    ],
+    "quote": "小桥流水，步步皆景。",
+    "thoughts": [
+      "苏州园林与街巷细节很多，适合慢慢逛。",
+      "水巷和石桥在不同光线下会有完全不同的质感。"
+    ],
+    "photos": [
+      "./assets/photos/China/JiangSu/Suzhou/01.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/02.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/03.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/04.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/05.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/06.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/07.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/08.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/09.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/10.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/11.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/12.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/13.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/14.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/15.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/16.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/17.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/18.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/19.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/20.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/21.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/22.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/23.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/24.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/25.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/26.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/27.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/28.jpg",
+      "./assets/photos/China/JiangSu/Suzhou/29.jpg"
+    ],
+    "country_zh": "中国",
+    "country_en": "China"
   }
 ]
