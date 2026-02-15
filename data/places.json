@@ -1332,5 +1332,51 @@
     ],
     "country_zh": "中国",
     "country_en": "China"
+  },
+  {
+    "slug": "zhenjiang",
+    "name_zh": "镇江",
+    "name_en": "Zhenjiang",
+    "lat": 32.1878,
+    "lon": 119.425,
+    "visited": true,
+    "date_range": "2025.02",
+    "tags": [
+      "River",
+      "Temple",
+      "Jiangnan"
+    ],
+    "quote": "江风入城，山寺入画。",
+    "thoughts": [
+      "镇江的江景和山寺互相映衬，步行体验很舒服。",
+      "老城街巷有很强的生活感，拍照和慢逛都很合适。"
+    ],
+    "photos": [
+      "./assets/photos/China/JiangSu/Zhenjiang/01.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/02.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/03.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/04.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/05.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/06.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/07.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/08.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/09.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/10.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/11.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/12.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/13.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/14.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/15.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/16.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/17.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/18.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/19.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/20.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/21.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/22.jpg",
+      "./assets/photos/China/JiangSu/Zhenjiang/23.jpg"
+    ],
+    "country_zh": "中国",
+    "country_en": "China"
   }
 ]
