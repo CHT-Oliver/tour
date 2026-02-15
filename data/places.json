@@ -876,5 +876,38 @@
     ],
     "country_zh": "美国",
     "country_en": "USA"
+  },
+  {
+    "slug": "zhuhai",
+    "name_zh": "珠海",
+    "name_en": "Zhuhai",
+    "lat": 22.271,
+    "lon": 113.5767,
+    "visited": true,
+    "date_range": "2025.02",
+    "tags": [
+      "Coast",
+      "Island",
+      "City Walk"
+    ],
+    "quote": "海风很近，城市很慢。",
+    "thoughts": [
+      "珠海的海岸线很舒服，适合慢节奏散步。",
+      "白天和傍晚的光线变化很漂亮，拍照出片率很高。"
+    ],
+    "photos": [
+      "./assets/photos/China/Canton/Zhuhai/01.jpg",
+      "./assets/photos/China/Canton/Zhuhai/02.jpg",
+      "./assets/photos/China/Canton/Zhuhai/03.jpg",
+      "./assets/photos/China/Canton/Zhuhai/04.jpg",
+      "./assets/photos/China/Canton/Zhuhai/05.jpg",
+      "./assets/photos/China/Canton/Zhuhai/06.jpg",
+      "./assets/photos/China/Canton/Zhuhai/07.jpg",
+      "./assets/photos/China/Canton/Zhuhai/08.jpg",
+      "./assets/photos/China/Canton/Zhuhai/09.jpg",
+      "./assets/photos/China/Canton/Zhuhai/10.jpg"
+    ],
+    "country_zh": "中国",
+    "country_en": "China"
   }
 ]
