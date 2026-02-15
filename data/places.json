@@ -1027,5 +1027,54 @@
     ],
     "country_zh": "中国",
     "country_en": "China"
+  },
+  {
+    "slug": "macau",
+    "name_zh": "澳门",
+    "name_en": "Macau",
+    "lat": 22.1987,
+    "lon": 113.5439,
+    "visited": true,
+    "date_range": "2025.02",
+    "tags": [
+      "Heritage",
+      "Night",
+      "Portuguese"
+    ],
+    "quote": "旧城与霓虹在一条街相遇。",
+    "thoughts": [
+      "澳门半岛的街巷很有历史感，步行体验很丰富。",
+      "夜景和建筑风格反差明显，拍照题材很多。"
+    ],
+    "photos": [
+      "./assets/photos/China/Macao/01.jpg",
+      "./assets/photos/China/Macao/02.jpg",
+      "./assets/photos/China/Macao/03.jpg",
+      "./assets/photos/China/Macao/04.jpg",
+      "./assets/photos/China/Macao/05.jpg",
+      "./assets/photos/China/Macao/06.jpg",
+      "./assets/photos/China/Macao/07.jpg",
+      "./assets/photos/China/Macao/08.jpg",
+      "./assets/photos/China/Macao/09.jpg",
+      "./assets/photos/China/Macao/10.jpg",
+      "./assets/photos/China/Macao/11.jpg",
+      "./assets/photos/China/Macao/12.jpg",
+      "./assets/photos/China/Macao/13.jpg",
+      "./assets/photos/China/Macao/14.jpg",
+      "./assets/photos/China/Macao/15.jpg",
+      "./assets/photos/China/Macao/16.jpg",
+      "./assets/photos/China/Macao/17.jpg",
+      "./assets/photos/China/Macao/18.jpg",
+      "./assets/photos/China/Macao/19.jpg",
+      "./assets/photos/China/Macao/20.jpg",
+      "./assets/photos/China/Macao/21.jpg",
+      "./assets/photos/China/Macao/22.jpg",
+      "./assets/photos/China/Macao/23.jpg",
+      "./assets/photos/China/Macao/24.jpg",
+      "./assets/photos/China/Macao/25.jpg",
+      "./assets/photos/China/Macao/26.jpg"
+    ],
+    "country_zh": "中国",
+    "country_en": "China"
   }
 ]
