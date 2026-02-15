@@ -1280,5 +1280,57 @@
     ],
     "country_zh": "中国",
     "country_en": "China"
+  },
+  {
+    "slug": "wuxi",
+    "name_zh": "无锡",
+    "name_en": "Wuxi",
+    "lat": 31.49099,
+    "lon": 120.31237,
+    "visited": true,
+    "date_range": "2025.02",
+    "tags": [
+      "Lake",
+      "Jiangnan",
+      "City Walk"
+    ],
+    "quote": "太湖的风，把城市线条吹得更柔和。",
+    "thoughts": [
+      "无锡的湖景和城市景观结合得很自然，走起来很舒服。",
+      "老城区与新城区切换明显，拍摄题材很丰富。"
+    ],
+    "photos": [
+      "./assets/photos/China/JiangSu/Wuxi/01.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/02.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/03.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/04.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/05.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/06.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/07.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/08.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/09.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/10.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/11.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/12.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/13.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/14.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/15.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/16.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/17.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/18.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/19.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/20.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/21.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/22.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/23.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/24.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/25.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/26.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/27.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/28.jpg",
+      "./assets/photos/China/JiangSu/Wuxi/29.jpg"
+    ],
+    "country_zh": "中国",
+    "country_en": "China"
   }
 ]
