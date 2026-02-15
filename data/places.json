@@ -909,5 +909,35 @@
     ],
     "country_zh": "中国",
     "country_en": "China"
+  },
+  {
+    "slug": "foshan",
+    "name_zh": "佛山",
+    "name_en": "Foshan",
+    "lat": 23.0215,
+    "lon": 113.1214,
+    "visited": true,
+    "date_range": "2025.02",
+    "tags": [
+      "Lingnan",
+      "Food",
+      "Old Town"
+    ],
+    "quote": "在老街巷里，时间会慢一点。",
+    "thoughts": [
+      "佛山的街区很有生活气，岭南建筑细节丰富。",
+      "城市节奏务实，但也有很多适合慢逛的角落。"
+    ],
+    "photos": [
+      "./assets/photos/China/Canton/Foshan/01.jpg",
+      "./assets/photos/China/Canton/Foshan/02.jpg",
+      "./assets/photos/China/Canton/Foshan/03.jpg",
+      "./assets/photos/China/Canton/Foshan/04.jpg",
+      "./assets/photos/China/Canton/Foshan/05.jpg",
+      "./assets/photos/China/Canton/Foshan/06.jpg",
+      "./assets/photos/China/Canton/Foshan/07.jpg"
+    ],
+    "country_zh": "中国",
+    "country_en": "China"
   }
 ]
