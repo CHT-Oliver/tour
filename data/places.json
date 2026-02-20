@@ -1690,5 +1690,31 @@
     ],
     "country_zh": "中国",
     "country_en": "China"
+  },
+  {
+    "slug": "nhatrang",
+    "name_zh": "芽庄",
+    "name_en": "Nha Trang",
+    "lat": 12.2388,
+    "lon": 109.1967,
+    "visited": true,
+    "date_range": "2025.02",
+    "tags": [
+      "Beach",
+      "Ocean",
+      "Resort"
+    ],
+    "quote": "海风与日光把节奏拉得很慢。",
+    "thoughts": [
+      "沙滩和海色非常干净，适合慢走与放空。",
+      "傍晚的海岸线很有层次感，拍照很出片。"
+    ],
+    "photos": [
+      "./assets/photos/Vietnam/nha trang/01.jpg",
+      "./assets/photos/Vietnam/nha trang/02.jpg",
+      "./assets/photos/Vietnam/nha trang/03.jpg"
+    ],
+    "country_zh": "越南",
+    "country_en": "Vietnam"
   }
 ]
