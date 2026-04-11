@@ -1,5 +1,7 @@
 import { initTransitionLayer, transitionTo, playReveal, prefersReducedMotion } from "./router/transition.js";
 
+const PLACE_GALLERY_BATCH_SIZE = 8;
+
 const DEFAULT_PLACES = [
   {
     slug: "paris",
@@ -80,7 +82,7 @@ if (page === "place") {
 
 async function loadPlaces() {
   try {
-    const res = await fetch("./data/places.json", { cache: "no-store" });
+    const res = await fetch("./data/places.json");
     if (!res.ok) throw new Error("Failed to load places");
     return await res.json();
   } catch (err) {
@@ -90,8 +92,20 @@ async function loadPlaces() {
 
 async function initHome() {
   playReveal();
+  const bootMap = () => {
+    void mountHomeMap();
+  };
+
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(bootMap, { timeout: 800 });
+  } else {
+    window.setTimeout(bootMap, 96);
+  }
+}
+
+async function mountHomeMap() {
   if (!window.L) return;
-  const showTextLabels = true;
+  const showTextLabels = window.innerWidth > 900;
   const initialCenter = [35.0, 104.0];
   const initialZoom = 4.0;
   const map = L.map("map", {
@@ -108,9 +122,9 @@ async function initHome() {
     doubleClickZoom: true,
     keyboard: true,
     preferCanvas: false,
-    zoomAnimation: true,
-    fadeAnimation: true,
-    markerZoomAnimation: true,
+    zoomAnimation: false,
+    fadeAnimation: false,
+    markerZoomAnimation: false,
     bounceAtZoomLimits: false,
   }).setView(initialCenter, initialZoom);
   const bounds = L.latLngBounds([[-85.0511, -180], [85.0511, 180]]);
@@ -129,9 +143,9 @@ async function initHome() {
     attribution: "",
     updateWhenIdle: true,
     updateWhenZooming: false,
-    keepBuffer: 2,
+    keepBuffer: 1,
     updateInterval: 150,
-    detectRetina: true,
+    detectRetina: false,
     maxNativeZoom: 19,
     noWrap: true,
     bounds,
@@ -295,14 +309,6 @@ async function initHome() {
 
 async function initPlace() {
   playReveal();
-  const lenis = !prefersReducedMotion && window.Lenis ? new Lenis({ smoothWheel: true, duration: 1.2 }) : null;
-  if (lenis) {
-    const raf = (time) => {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    };
-    requestAnimationFrame(raf);
-  }
 
   const params = new URLSearchParams(window.location.search);
   const slug = params.get("slug");
@@ -314,6 +320,7 @@ async function initPlace() {
   const tagsEl = document.getElementById("place-tags");
   const quoteEl = document.getElementById("place-quote");
   const galleryEl = document.getElementById("place-gallery");
+  const galleryControlsEl = document.getElementById("gallery-controls");
   const thoughtsEl = document.getElementById("place-thoughts");
 
   if (!place) {
@@ -322,6 +329,7 @@ async function initPlace() {
     tagsEl.innerHTML = "";
     quoteEl.textContent = "";
     galleryEl.innerHTML = "";
+    galleryControlsEl.innerHTML = "";
     thoughtsEl.innerHTML = "<div class=\"notice\">未找到该地点。</div>";
     return;
   }
@@ -338,50 +346,88 @@ async function initPlace() {
     quoteEl.style.display = "none";
   }
 
-  galleryEl.innerHTML = place.photos
-    .map((photo, index) => {
-      const eager = index < 2;
-      const loadingAttr = eager ? "eager" : "lazy";
-      const fetchPriority = eager && index === 0 ? "high" : "auto";
-      return `
-        <figure>
-          <a href="${photo}" class="glightbox" data-gallery="${place.slug}">
-            <img
-              src="${photo}"
-              alt="${place.name_en}"
-              loading="${loadingAttr}"
-              fetchpriority="${fetchPriority}"
-              decoding="async"
-              draggable="false"
-            />
-          </a>
-        </figure>
-      `
-    })
-    .join("");
+  galleryEl.innerHTML = "";
+  galleryControlsEl.innerHTML = "";
 
-  // Mark images as loaded to remove placeholder effect incrementally.
-  galleryEl.querySelectorAll("img").forEach((img) => {
-    const markLoaded = () => {
-      img.closest("figure")?.classList.add("is-loaded");
-    };
-    if (img.complete) {
-      markLoaded();
-    } else {
-      img.addEventListener("load", markLoaded, { once: true });
-      img.addEventListener("error", markLoaded, { once: true });
-    }
-  });
+  const markFigureLoaded = (img) => {
+    img.closest("figure")?.classList.add("is-loaded");
+  };
+
+  let lightbox = null;
+  const syncLightbox = () => {
+    if (!window.GLightbox) return;
+    lightbox?.destroy?.();
+    lightbox = GLightbox({ selector: ".glightbox", touchNavigation: true, loop: true });
+  };
+
+  let renderedPhotos = 0;
+  const updateGalleryControls = () => {
+    galleryControlsEl.innerHTML = "";
+    const progress = document.createElement("div");
+    progress.className = "gallery-progress";
+    progress.textContent = `${renderedPhotos} / ${place.photos.length} photos`;
+    galleryControlsEl.appendChild(progress);
+
+    if (renderedPhotos >= place.photos.length) return;
+
+    const remaining = place.photos.length - renderedPhotos;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "load-more-button";
+    button.textContent = `Load ${Math.min(PLACE_GALLERY_BATCH_SIZE, remaining)} More Photos`;
+    button.addEventListener("click", renderNextBatch);
+    galleryControlsEl.appendChild(button);
+  };
+
+  const renderNextBatch = () => {
+    const nextPhotos = place.photos.slice(renderedPhotos, renderedPhotos + PLACE_GALLERY_BATCH_SIZE);
+    const fragment = document.createDocumentFragment();
+
+    nextPhotos.forEach((photo, index) => {
+      const absoluteIndex = renderedPhotos + index;
+      const figure = document.createElement("figure");
+      const link = document.createElement("a");
+      const img = document.createElement("img");
+
+      link.href = photo;
+      link.className = "glightbox";
+      link.dataset.gallery = place.slug;
+
+      img.src = photo;
+      img.alt = place.name_en;
+      img.loading = absoluteIndex === 0 ? "eager" : "lazy";
+      img.fetchPriority = absoluteIndex === 0 ? "high" : "low";
+      img.decoding = "async";
+      img.draggable = false;
+
+      link.appendChild(img);
+      figure.appendChild(link);
+
+      if (img.complete) {
+        markFigureLoaded(img);
+      } else {
+        img.addEventListener("load", () => markFigureLoaded(img), { once: true });
+        img.addEventListener("error", () => markFigureLoaded(img), { once: true });
+      }
+
+      fragment.appendChild(figure);
+    });
+
+    galleryEl.appendChild(fragment);
+    renderedPhotos += nextPhotos.length;
+    updateGalleryControls();
+    syncLightbox();
+  };
+
+  if (!place.photos.length) {
+    galleryEl.innerHTML = "<div class=\"notice\">暂无照片。</div>";
+  } else {
+    renderNextBatch();
+  }
 
   thoughtsEl.innerHTML = place.thoughts
     .map((text, index) => `<p class=\"${index === 0 ? "dropcap" : ""}\">${text}</p>`)
     .join("");
-
-  if (window.GLightbox) {
-    GLightbox({ selector: ".glightbox", touchNavigation: true, loop: true });
-  }
-
-  setupMasonry();
   setupScrollReveal();
 
   // Page scroll handles gallery naturally.
@@ -392,60 +438,6 @@ async function initPlace() {
     transitionTo("./index.html", { x: window.innerWidth * 0.5, y: 0 });
   });
 
-}
-
-function setupMasonry() {
-  const grid = document.querySelector(".gallery-masonry");
-  if (!grid) return;
-  const items = Array.from(grid.querySelectorAll("figure"));
-  if (!items.length) return;
-
-  const getSizes = () => {
-    const style = window.getComputedStyle(grid);
-    const rowHeight = parseInt(style.getPropertyValue("grid-auto-rows"), 10);
-    const rowGap = parseInt(style.getPropertyValue("row-gap"), 10);
-    return { rowHeight, rowGap };
-  };
-
-  const layout = () => {
-    const { rowHeight, rowGap } = getSizes();
-    items.forEach((item) => {
-      const contentHeight = item.getBoundingClientRect().height;
-      const span = Math.ceil((contentHeight + rowGap) / (rowHeight + rowGap));
-      item.style.gridRowEnd = `span ${span}`;
-    });
-  };
-
-  let pending = false;
-  const schedule = () => {
-    if (pending) return;
-    pending = true;
-    requestAnimationFrame(() => {
-      layout();
-      pending = false;
-    });
-  };
-
-  const imgs = items.map((item) => item.querySelector("img")).filter(Boolean);
-  let loaded = 0;
-  imgs.forEach((img) => {
-    if (img.complete) {
-      loaded += 1;
-      if (loaded === imgs.length) schedule();
-    } else {
-      img.addEventListener("load", () => {
-        loaded += 1;
-        if (loaded === imgs.length) schedule();
-      });
-      img.addEventListener("error", () => {
-        loaded += 1;
-        if (loaded === imgs.length) schedule();
-      });
-    }
-  });
-
-  window.addEventListener("resize", schedule, { passive: true });
-  schedule();
 }
 
 function setupScrollReveal() {

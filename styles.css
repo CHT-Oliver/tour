@@ -11,6 +11,8 @@
   --paper: #f7f4ee;
   --radius: 12px;
   --ease-luxe: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-serif: "Iowan Old Style", "Baskerville", "Times New Roman", "Songti SC", "STSong", serif;
 }
 
 * { box-sizing: border-box; }
@@ -22,7 +24,7 @@ html, body {
   height: 100%;
   background: var(--ivory);
   color: var(--ink);
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -60,7 +62,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .brand {
-  font-family: "Cormorant Garamond", "Playfair Display", serif;
+  font-family: var(--font-serif);
   font-size: 22px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -177,7 +179,6 @@ a { color: inherit; text-decoration: none; }
   background: rgba(247, 244, 238, 0.92);
   box-shadow: 0 18px 40px rgba(18, 18, 18, 0.18);
   border: 1px solid rgba(200, 169, 106, 0.45);
-  backdrop-filter: blur(6px);
 }
 
 .lux-zoom .zoom-btn {
@@ -231,11 +232,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .leaflet-tile-pane {
-  filter: sepia(0.18) saturate(0.78) contrast(0.95);
-}
-
-.leaflet-container.is-dragging .leaflet-tile-pane {
-  filter: none;
+  will-change: transform;
 }
 
 .leaflet-container.is-dragging .map-pin {
@@ -269,7 +266,6 @@ a { color: inherit; text-decoration: none; }
   box-shadow:
     0 0 24px rgba(255, 232, 152, 1),
     0 0 40px rgba(255, 198, 88, 0.98);
-  animation: shimmer 1s ease-in-out infinite;
 }
 
 .map-pin::before {
@@ -279,7 +275,6 @@ a { color: inherit; text-decoration: none; }
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 255, 245, 1) 0%, rgba(255, 236, 170, 0.65) 40%, rgba(255, 206, 102, 0.38) 56%, rgba(240, 206, 130, 0) 76%);
   filter: blur(0.9px);
-  animation: lampGlow 0.95s ease-in-out infinite;
 }
 
 .hover-hitbox {
@@ -308,16 +303,6 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
 }
 
-@keyframes shimmer {
-  0%, 100% { opacity: 0.88; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.35); }
-}
-
-@keyframes lampGlow {
-  0%, 100% { opacity: 0.86; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
 .lux-tooltip {
   background: rgba(25, 28, 24, 0.92);
   color: var(--ivory);
@@ -325,7 +310,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: 10px;
   padding: 10px 14px;
   box-shadow: 0 18px 50px rgba(0,0,0,0.35);
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-serif);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -347,7 +332,7 @@ a { color: inherit; text-decoration: none; }
 
 .country-label,
 .city-label {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-serif);
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: rgba(25, 28, 24, 0.68);
@@ -456,7 +441,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .home-hero h1 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-serif);
   font-size: 40px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -489,7 +474,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .place-hero h1 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-serif);
   font-size: clamp(36px, 5vw, 58px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -509,7 +494,7 @@ a { color: inherit; text-decoration: none; }
 
 .place-hero .quote {
   margin-top: 26px;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-serif);
   font-size: 20px;
   color: var(--charcoal);
   position: relative;
@@ -532,16 +517,14 @@ a { color: inherit; text-decoration: none; }
 }
 
 .gallery-masonry {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  grid-auto-rows: 10px;
-  gap: 20px;
-  grid-auto-flow: dense;
-  align-items: start;
+  columns: 3 280px;
+  column-gap: 20px;
 }
 
 .gallery-masonry figure {
-  margin: 0;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 20px;
   position: relative;
   border-radius: var(--radius);
   overflow: hidden;
@@ -551,18 +534,7 @@ a { color: inherit; text-decoration: none; }
   transition: transform 0.8s var(--ease-luxe), box-shadow 0.8s var(--ease-luxe);
   content-visibility: auto;
   contain-intrinsic-size: 360px 260px;
-}
-
-.gallery-masonry figure:nth-child(3n) {
-  transform: translateX(6px);
-}
-
-.gallery-masonry figure:nth-child(4n) {
-  transform: translateX(-5px);
-}
-
-.gallery-masonry figure:nth-child(5n) {
-  transform: translateX(4px);
+  break-inside: avoid;
 }
 
 .gallery-masonry img {
@@ -601,6 +573,42 @@ a { color: inherit; text-decoration: none; }
   filter: saturate(1.05);
 }
 
+.gallery-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.gallery-progress {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+.load-more-button {
+  border: 1px solid rgba(200, 169, 106, 0.5);
+  background: rgba(247, 244, 238, 0.88);
+  color: var(--deep-green);
+  border-radius: 999px;
+  padding: 12px 18px;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.35s var(--ease-luxe), box-shadow 0.35s var(--ease-luxe), background 0.35s var(--ease-luxe);
+}
+
+.load-more-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px rgba(16, 16, 14, 0.14);
+  background: rgba(247, 244, 238, 0.98);
+}
+
 .thoughts {
   margin-top: 30px;
   font-size: 16px;
@@ -613,7 +621,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .thoughts p.dropcap::first-letter {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-serif);
   font-size: 54px;
   float: left;
   line-height: 0.9;
@@ -655,7 +663,6 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase;
   transition: transform 0.5s var(--ease-luxe), box-shadow 0.5s var(--ease-luxe), background 0.5s var(--ease-luxe);
   background: rgba(247, 244, 238, 0.6);
-  backdrop-filter: blur(6px);
 }
 
 .back-button:hover {
@@ -752,13 +759,11 @@ a { color: inherit; text-decoration: none; }
   }
 
   .gallery-masonry {
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-    gap: 18px;
+    columns: 1;
+    column-gap: 0;
   }
 
   .gallery-masonry figure {
-    transform: none !important;
     box-shadow: 0 10px 24px rgba(17, 16, 12, 0.14);
   }
 

@@ -1,4 +1,5 @@
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const TRANSITION_TARGET_KEY = "haotian-atlas:transition-target";
 
 export function initTransitionLayer() {
   if (prefersReducedMotion) return;
@@ -19,11 +20,37 @@ function setOrigin(layer, x, y) {
   layer.style.setProperty("--y", `${yy}px`);
 }
 
+function normalizeUrl(url) {
+  const target = new URL(url, window.location.href);
+  return `${target.pathname}${target.search}`;
+}
+
+function markTransitionTarget(url) {
+  try {
+    window.sessionStorage.setItem(TRANSITION_TARGET_KEY, normalizeUrl(url));
+  } catch (error) {
+    // Ignore storage failures and fall back to direct navigation.
+  }
+}
+
+function consumeTransitionTarget() {
+  try {
+    const expected = window.sessionStorage.getItem(TRANSITION_TARGET_KEY);
+    const current = `${window.location.pathname}${window.location.search}`;
+    if (!expected || expected !== current) return false;
+    window.sessionStorage.removeItem(TRANSITION_TARGET_KEY);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export function transitionTo(url, origin = {}) {
   if (prefersReducedMotion) {
     window.location.href = url;
     return;
   }
+  markTransitionTarget(url);
   const layer = document.querySelector(".transition-layer");
   if (!layer || !window.gsap) {
     window.location.href = url;
@@ -81,6 +108,7 @@ export function transitionTo(url, origin = {}) {
 
 export function playReveal() {
   if (prefersReducedMotion) return;
+  if (!consumeTransitionTarget()) return;
   const layer = document.querySelector(".transition-layer");
   if (!layer || !window.gsap) return;
   setOrigin(layer);
