@@ -390,6 +390,8 @@ async function initPlace() {
       const absoluteIndex = renderedPhotos + index;
       const useThumb = THUMBNAILED_PLACE_SLUGS.has(place.slug);
       const previewSrc = useThumb ? getThumbSrc(photo) : photo;
+      const originalSrc = new URL(photo, window.location.href).href;
+      let triedOriginal = !useThumb;
       const figure = document.createElement("figure");
       const link = document.createElement("a");
       const img = document.createElement("img");
@@ -406,9 +408,14 @@ async function initPlace() {
       img.draggable = false;
       img.sizes = "(max-width: 900px) 100vw, 33vw";
       img.addEventListener("error", () => {
-        if (img.src.endsWith(photo.replace(/^\.\//, ""))) return;
-        img.src = photo;
-      }, { once: true });
+        if (!triedOriginal && img.src !== originalSrc) {
+          triedOriginal = true;
+          img.src = photo;
+          return;
+        }
+        figure.remove();
+        syncLightbox();
+      });
 
       link.appendChild(img);
       figure.appendChild(link);
@@ -417,7 +424,6 @@ async function initPlace() {
         markFigureLoaded(img);
       } else {
         img.addEventListener("load", () => markFigureLoaded(img), { once: true });
-        img.addEventListener("error", () => markFigureLoaded(img), { once: true });
       }
 
       fragment.appendChild(figure);
