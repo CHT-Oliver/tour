@@ -1,6 +1,7 @@
 import { initTransitionLayer, transitionTo, playReveal, prefersReducedMotion } from "./router/transition.js";
 
 const PLACE_GALLERY_BATCH_SIZE = 8;
+const THUMBNAILED_PLACE_SLUGS = new Set(["tianjin"]);
 
 const DEFAULT_PLACES = [
   {
@@ -90,6 +91,12 @@ async function loadPlaces() {
   }
 }
 
+function getThumbSrc(photo) {
+  return photo
+    .replace(/(^\.\/)?assets\/photos\//, "$1assets/thumbs/")
+    .replace(/\.[^/.]+$/, ".webp");
+}
+
 async function initHome() {
   playReveal();
   const bootMap = () => {
@@ -115,21 +122,19 @@ async function mountHomeMap() {
     maxZoom: 12,
     zoomSnap: 0.5,
     zoomDelta: 0.5,
-    worldCopyJump: false,
+    worldCopyJump: true,
     inertia: true,
     scrollWheelZoom: true,
     touchZoom: true,
     doubleClickZoom: true,
     keyboard: true,
     preferCanvas: false,
+    dragging: true,
     zoomAnimation: false,
     fadeAnimation: false,
     markerZoomAnimation: false,
     bounceAtZoomLimits: false,
   }).setView(initialCenter, initialZoom);
-  const bounds = L.latLngBounds([[-85.0511, -180], [85.0511, 180]]);
-  map.setMaxBounds(bounds);
-  map.options.maxBoundsViscosity = 1.0;
   map.setView(initialCenter, initialZoom, { animate: false });
 
   const zoomBox = document.getElementById("lux-zoom");
@@ -147,8 +152,7 @@ async function mountHomeMap() {
     updateInterval: 150,
     detectRetina: false,
     maxNativeZoom: 19,
-    noWrap: true,
-    bounds,
+    noWrap: false,
   }).addTo(map);
 
   // Fallback on unstable mobile networks to avoid blank tile patches.
@@ -161,8 +165,7 @@ async function mountHomeMap() {
     updateInterval: 150,
     detectRetina: false,
     maxNativeZoom: 19,
-    noWrap: true,
-    bounds,
+    noWrap: false,
   });
 
   primaryTiles.on("tileerror", () => {
@@ -191,12 +194,10 @@ async function mountHomeMap() {
   map.on("movestart", () => setDragging(true));
   map.on("moveend", () => {
     setDragging(false);
-    map.panInsideBounds(bounds, { animate: false });
   });
   map.on("zoomstart", () => setDragging(true));
   map.on("zoomend", () => {
     setDragging(false);
-    map.panInsideBounds(bounds, { animate: false });
   });
 
   const places = await loadPlaces();
@@ -229,8 +230,9 @@ async function mountHomeMap() {
     pinLayer.addLayer(marker);
 
     const labelText = `${place.name_zh} ${place.name_en}`.trim();
-    const hitWidth = Math.min(260, Math.max(160, labelText.length * 12));
-    const hitHeight = 80;
+    const compactHitbox = window.innerWidth <= 900;
+    const hitWidth = compactHitbox ? 44 : Math.min(180, Math.max(72, labelText.length * 8));
+    const hitHeight = compactHitbox ? 44 : 56;
     const hoverMarker = L.marker([place.lat, place.lon], {
       icon: L.divIcon({
         className: "hover-hitbox",
@@ -239,6 +241,7 @@ async function mountHomeMap() {
         iconAnchor: [hitWidth / 2, hitHeight / 2],
       }),
       interactive: true,
+      bubblingMouseEvents: true,
     });
     hoverLayer.addLayer(hoverMarker);
 
@@ -385,6 +388,8 @@ async function initPlace() {
 
     nextPhotos.forEach((photo, index) => {
       const absoluteIndex = renderedPhotos + index;
+      const useThumb = THUMBNAILED_PLACE_SLUGS.has(place.slug);
+      const previewSrc = useThumb ? getThumbSrc(photo) : photo;
       const figure = document.createElement("figure");
       const link = document.createElement("a");
       const img = document.createElement("img");
@@ -393,12 +398,17 @@ async function initPlace() {
       link.className = "glightbox";
       link.dataset.gallery = place.slug;
 
-      img.src = photo;
+      img.src = previewSrc;
       img.alt = place.name_en;
       img.loading = absoluteIndex === 0 ? "eager" : "lazy";
       img.fetchPriority = absoluteIndex === 0 ? "high" : "low";
       img.decoding = "async";
       img.draggable = false;
+      img.sizes = "(max-width: 900px) 100vw, 33vw";
+      img.addEventListener("error", () => {
+        if (img.src.endsWith(photo.replace(/^\.\//, ""))) return;
+        img.src = photo;
+      }, { once: true });
 
       link.appendChild(img);
       figure.appendChild(link);
